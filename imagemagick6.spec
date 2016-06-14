@@ -13,9 +13,9 @@
 %define qlev Q16
 
 # their "official" version
-%define rversion 6.9.2
+%define rversion 6.9.4
 # their "minor" version
-%define minor_rev 4
+%define minor_rev 9
 # the full file version
 %define dversion %{rversion}-%{minor_rev}
 
@@ -28,9 +28,9 @@
 %define devname %mklibname magick -d
 
 Summary:	An X application for displaying and manipulating images
-Name:		imagemagick
+Name:		imagemagick6
 Version:	%{rversion}.%{minor_rev}
-Release:	3
+Release:	1
 License:	BSD-like
 Group:		Graphics
 Url:		http://www.imagemagick.org/
