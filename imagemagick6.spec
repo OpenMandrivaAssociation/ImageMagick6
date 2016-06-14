@@ -33,7 +33,7 @@ Version:	%{rversion}.%{minor_rev}
 Release:	1
 License:	BSD-like
 Group:		Graphics
-Url:		http://www.imagemagick.org/
+Url:		http://legacy.imagemagick.org/
 Source0:	ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-%{dversion}.tar.xz
 Source1:	ImageMagick.pdf.bz2
 Source2:	%{name}.rpmlintrc
