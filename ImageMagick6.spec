@@ -13,15 +13,15 @@
 %define qlev Q16
 
 # their "official" version
-%define rversion 6.9.4
+%define rversion 6.9.8
 # their "minor" version
-%define minor_rev 9
+%define minor_rev 10
 # the full file version
 %define dversion %{rversion}-%{minor_rev}
 
 %define api	6
-%define major	2
-%define cppmajor 6
+%define major	4
+%define cppmajor 7
 %define libMagickpp %mklibname Magick++ %{api}.%{qlev} %{cppmajor}
 %define libMagickCore %mklibname MagickCore %{api}.%{qlev} %{major}
 %define libMagickWand %mklibname MagickWand %{api}.%{qlev} %{major}
@@ -236,22 +236,6 @@ ln -s libMagick++-%{api}.%{qlev}.so %{buildroot}%{_libdir}/libMagick++.so
 ln -s libMagickCore-%{api}.%{qlev}.so %{buildroot}%{_libdir}/libMagickCore.so
 ln -s libMagickWand-%{api}.%{qlev}.so %{buildroot}%{_libdir}/libMagickWand.so
 
-%multiarch_binaries %{buildroot}%{_bindir}/Magick-config
-
-%multiarch_binaries %{buildroot}%{_bindir}/Magick++-config
-
-%multiarch_binaries %{buildroot}%{_bindir}/MagickCore-config
-
-%multiarch_binaries %{buildroot}%{_bindir}/MagickWand-config
-
-%multiarch_binaries %{buildroot}%{_bindir}/Wand-config
-
-%multiarch_includes %{buildroot}%{_includedir}/ImageMagick-%{api}/magick/magick-config.h
-
-# nuke rpath
-chmod u+w %{buildroot}%{perl_vendorarch}/auto/Image/Magick/Magick.so
-chrpath -d %{buildroot}%{perl_vendorarch}/auto/Image/Magick/Magick.so
-
 # icons
 install -m 755 -d %{buildroot}%{_liconsdir} \
 	   %{buildroot}%{_iconsdir} \
@@ -321,14 +305,6 @@ EOF
 
 %files -n %{devname}
 %{_includedir}/ImageMagick-%{api}
-%{multiarch_bindir}/Magick-config
-%{multiarch_bindir}/Magick++-config
-%{multiarch_bindir}/MagickCore-config
-%{multiarch_bindir}/MagickWand-config
-%{multiarch_bindir}/Wand-config
-%dir %{multiarch_includedir}/ImageMagick-%{api}
-%dir %{multiarch_includedir}/ImageMagick-%{api}/magick
-%{multiarch_includedir}/ImageMagick-%{api}/magick/magick-config.h
 %{_bindir}/Magick-config
 %{_bindir}/Magick++-config
 %{_bindir}/MagickCore-config
