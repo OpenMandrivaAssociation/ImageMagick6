@@ -13,15 +13,15 @@
 %define qlev Q16
 
 # their "official" version
-%define rversion 6.9.8
+%define rversion %(echo %{version} |cut -d. -f1-3)
 # their "minor" version
-%define minor_rev 10
+%define minor_rev %(echo %{version} |cut -d. -f4)
 # the full file version
 %define dversion %{rversion}-%{minor_rev}
 
 %define api	6
-%define major	4
-%define cppmajor 7
+%define major	5
+%define cppmajor 8
 %define libMagickpp %mklibname Magick++ %{api}.%{qlev} %{cppmajor}
 %define libMagickCore %mklibname MagickCore %{api}.%{qlev} %{major}
 %define libMagickWand %mklibname MagickWand %{api}.%{qlev} %{major}
@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	%{rversion}.%{minor_rev}
+Version:	6.9.9.24
 Release:	1
 License:	BSD-like
 Group:		Graphics
@@ -43,6 +43,7 @@ Source11:	magick-icon_32x32.png
 Source12:	magick-icon_48x48.png
 Source13:	magick-icon_64x64.png
 Patch0:		perlmagick.rpath.patch
+Patch1:		ImageMagick-6.9.9-libdl.patch
 Patch7:		imagemagick-urw.diff
 Patch17:	imagemagick-fpx.diff
 Patch19:	ImageMagick-libpath.diff
