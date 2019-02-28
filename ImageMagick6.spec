@@ -59,6 +59,7 @@ BuildRequires:	jpeg-devel
 BuildRequires:	libtool-devel
 BuildRequires:	libwmf-devel
 BuildRequires:	perl-devel
+BuildRequires:	libatomic-devel
 BuildRequires:	pkgconfig(cairo)
 BuildRequires:	pkgconfig(fontconfig)
 BuildRequires:	pkgconfig(freetype2)
@@ -170,14 +171,6 @@ libtoolize --copy --force; aclocal -I m4; autoconf; automake -a
 %define Werror_cflags %nil
 export CFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
 export CXXFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
-
-%ifarch %arm
-export CC=gcc
-export CXX=g++
-%endif
-
-# don't use icecream
-export PATH=/bin:/usr/bin
 
 %configure \
 	--disable-static \
