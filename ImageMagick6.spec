@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.10.25
+Version:	6.9.10.29
 Release:	1
 License:	BSD-like
 Group:		Graphics
@@ -43,6 +43,7 @@ Source11:	magick-icon_32x32.png
 Source12:	magick-icon_48x48.png
 Source13:	magick-icon_64x64.png
 Patch0:		perlmagick.rpath.patch
+Patch1:		ImageMagick-6.9.10-29-link-libdl.patch
 Patch2:		imagemagick6-6.9.9-openmp-linkage.patch
 Patch7:		imagemagick-urw.diff
 Patch17:	imagemagick-fpx.diff
