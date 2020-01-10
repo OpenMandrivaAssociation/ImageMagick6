@@ -160,7 +160,7 @@ This package contains HTML/PDF documentation of %{name}.
 
 %prep
 %setup -qn ImageMagick-%{rversion}-%{minor_rev}
-%apply_patches
+%autopatch -p1
 
 bzcat %{SOURCE1} > ImageMagick.pdf
 install -m 644 %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} .
