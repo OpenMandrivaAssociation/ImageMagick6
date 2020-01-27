@@ -29,12 +29,12 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.10.60
+Version:	6.9.10.88
 Release:	1
 License:	BSD-like
 Group:		Graphics
 Url:		http://legacy.imagemagick.org/
-Source0:	ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-%{dversion}.tar.xz
+Source0:	https://github.com/ImageMagick/ImageMagick6/archive/%{dversion}/ImageMagick-%{dversion}.tar.gz
 Source1:	ImageMagick.pdf.bz2
 Source2:	%{name}.rpmlintrc
 # re-scaled from ftp://ftp.imagemagick.org/pub/ImageMagick/images/magick-icon.png
@@ -159,7 +159,7 @@ BuildArch:	noarch
 This package contains HTML/PDF documentation of %{name}.
 
 %prep
-%setup -qn ImageMagick-%{rversion}-%{minor_rev}
+%setup -qn ImageMagick6-%{rversion}-%{minor_rev}
 %autopatch -p1
 
 bzcat %{SOURCE1} > ImageMagick.pdf
