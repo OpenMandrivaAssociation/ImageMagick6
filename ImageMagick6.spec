@@ -20,8 +20,8 @@
 %define dversion %{rversion}-%{minor_rev}
 
 %define api	6
-%define major	6
-%define cppmajor 8
+%define major	7
+%define cppmajor 9
 %define libMagickpp %mklibname Magick++ %{api}.%{qlev} %{cppmajor}
 %define libMagickCore %mklibname MagickCore %{api}.%{qlev} %{major}
 %define libMagickWand %mklibname MagickWand %{api}.%{qlev} %{major}
@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.11.28
+Version:	6.9.12.2
 Release:	1
 License:	BSD-like
 Group:		Graphics
@@ -257,8 +257,8 @@ EOF
 
 %files
 %doc README.txt
-%doc %{_docdir}/ImageMagick-%{api}
-%{_sysconfdir}/ImageMagick-%{api}
+%doc %{_docdir}/ImageMagick-6
+%{_sysconfdir}/ImageMagick-6
 %{_bindir}/animate
 %{_bindir}/compare
 %{_bindir}/composite
@@ -277,7 +277,7 @@ EOF
 %dir %{_libdir}/ImageMagick-%{rversion}/modules-%{qlev}/filters
 %{_libdir}/ImageMagick-%{rversion}/modules-%{qlev}/filters/*
 %{_libdir}/ImageMagick-%{rversion}/config-%{qlev}
-%{_datadir}/ImageMagick-%{api}
+%{_datadir}/ImageMagick-6
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %exclude %{_mandir}/man3/*::*.3pm*
