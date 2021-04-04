@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.12.2
+Version:	6.9.12.6
 Release:	1
 License:	BSD-like
 Group:		Graphics
@@ -65,6 +65,7 @@ BuildRequires:	pkgconfig(fontconfig)
 BuildRequires:	pkgconfig(freetype2)
 BuildRequires:	pkgconfig(jasper)
 BuildRequires:	pkgconfig(lcms2)
+BuildRequires:	pkgconfig(libjxl)
 BuildRequires:	pkgconfig(libgvc)
 BuildRequires:	pkgconfig(liblzma)
 BuildRequires:	pkgconfig(libtiff-4)
@@ -192,14 +193,17 @@ export CXXFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
 	--with-perl \
 	--with-perl-options="INSTALLDIRS=vendor CCFLAGS='%{optflags}' CC='%{__cc} -L$PWD/magick/.libs' LDDLFLAGS='%{ldflags} -shared -L$PWD/magick/.libs'" \
 	--with-jp2 \
+	--with-jxl \
 	--with-gvc \
 	--with-lqr
 
 # Disable rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+# Fix syntax errors
+find PerlMagick -name "*.PL" |xargs sed -i -e "s,'\$,';,g"
 
-%make
+%make_build
 
 %if %{build_test}
 %check
