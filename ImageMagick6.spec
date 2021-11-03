@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.12.25
+Version:	6.9.12.28
 Release:	1
 License:	BSD-like
 Group:		Graphics
