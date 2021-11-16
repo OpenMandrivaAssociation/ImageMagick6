@@ -30,7 +30,7 @@
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
 Version:	6.9.12.28
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		Graphics
 Url:		http://legacy.imagemagick.org/
@@ -53,9 +53,9 @@ Patch19:	ImageMagick-libpath.diff
 BuildRequires:	chrpath
 BuildRequires:	ghostscript
 BuildRequires:	subversion
-BuildRequires:	bzip2-devel
+BuildRequires:	pkgconfig(bzip2)
 BuildRequires:	jbig-devel
-BuildRequires:	jpeg-devel
+BuildRequires:	pkgconfig(libjpeg)
 BuildRequires:	libtool-devel
 BuildRequires:	libwmf-devel
 BuildRequires:	perl-devel
@@ -227,7 +227,7 @@ make check
 rm -rf installed_docs; mv %{buildroot}/installed_docs .
 
 # Remove unpackaged files
-rm -f %{buildroot}%{_libdir}/*.la
+find %{buildroot} -name '*.la' -type f -delete
 rm -f %{buildroot}%{_libdir}/libltdl* 
 
 # create compatible symlinks
@@ -282,8 +282,8 @@ EOF
 %{_libdir}/ImageMagick-%{rversion}/modules-%{qlev}/filters/*
 %{_libdir}/ImageMagick-%{rversion}/config-%{qlev}
 %{_datadir}/ImageMagick-6
-%{_mandir}/man1/*
-%{_mandir}/man3/*
+%doc %{_mandir}/man1/*
+%doc %{_mandir}/man3/*
 %exclude %{_mandir}/man3/*::*.3pm*
 
 %files desktop
@@ -315,7 +315,7 @@ EOF
 %files -n perl-Image-Magick
 %{perl_vendorarch}/Image
 %{perl_vendorarch}/auto/Image
-%{_mandir}/man3*/*::*.3pm*
+%doc %{_mandir}/man3*/*::*.3pm*
 
 %files doc
 %doc ImageMagick.pdf ChangeLog LICENSE NEWS* NOTICE
