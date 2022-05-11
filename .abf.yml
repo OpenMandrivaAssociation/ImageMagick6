@@ -4,6 +4,4 @@ sources:
   magick-icon_32x32.png: d0d0e9271d8a99621d50688d2fe57e17b88600a5
   magick-icon_48x48.png: 6d0d61d448bde80846883a509b2f10f322be631a
   magick-icon_64x64.png: ce0b5d2261d5ea5bc126ddc89fb5f4519a8a18e7
-  ImageMagick-6.9.12-31.tar.gz: 0029ddb8e558da9471adbe639033f87c7317ea52
-  ImageMagick-6.9.12-39.tar.gz: aa79da74f97d185a0b8668475facdfbf7bb02f9c
-  ImageMagick-6.9.12-41.tar.gz: c5c705293e27e6c1d1f44c90b9e77dbb75e52a65
+  ImageMagick-6.9.12-48.tar.gz: e329e259cf6087b6a9244699763c197b3f0981f4

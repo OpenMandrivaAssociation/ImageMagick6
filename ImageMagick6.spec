@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.12.41
+Version:	6.9.12.48
 Release:	1
 License:	BSD-like
 Group:		Graphics
@@ -318,5 +318,5 @@ EOF
 %doc %{_mandir}/man3*/*::*.3pm*
 
 %files doc
-%doc ImageMagick.pdf ChangeLog LICENSE NEWS* NOTICE
+%doc ImageMagick.pdf LICENSE NEWS* NOTICE
 %doc QuickStart.txt installed_docs/*
