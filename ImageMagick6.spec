@@ -29,12 +29,13 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.12.90
+Version:	6.9.12.93
 Release:	1
 License:	BSD-like
 Group:		Graphics
 Url:		http://legacy.imagemagick.org/
-Source0:	https://github.com/ImageMagick/ImageMagick6/archive/%{dversion}/ImageMagick-%{dversion}.tar.gz
+Source0:	https://imagemagick.org/archive/releases/ImageMagick-%{dversion}.tar.xz
+# Also:	https://github.com/ImageMagick/ImageMagick6/archive/%{dversion}/ImageMagick-%{dversion}.tar.gz
 Source1:	ImageMagick.pdf.bz2
 Source2:	%{name}.rpmlintrc
 # re-scaled from ftp://ftp.imagemagick.org/pub/ImageMagick/images/magick-icon.png
@@ -43,7 +44,6 @@ Source11:	magick-icon_32x32.png
 Source12:	magick-icon_48x48.png
 Source13:	magick-icon_64x64.png
 Patch0:		perlmagick.rpath.patch
-Patch1:		ImageMagick-6.9.10-29-link-libdl.patch
 Patch2:		imagemagick6-6.9.9-openmp-linkage.patch
 Patch7:		imagemagick-urw.diff
 Patch17:	imagemagick-fpx.diff
@@ -160,8 +160,7 @@ BuildArch:	noarch
 This package contains HTML/PDF documentation of %{name}.
 
 %prep
-%setup -qn ImageMagick6-%{rversion}-%{minor_rev}
-%autopatch -p1
+%autosetup -p1 -n ImageMagick-%{rversion}-%{minor_rev}
 
 bzcat %{SOURCE1} > ImageMagick.pdf
 install -m 644 %{SOURCE10} %{SOURCE11} %{SOURCE12} %{SOURCE13} .
