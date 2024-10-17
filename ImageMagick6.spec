@@ -33,7 +33,7 @@ Version:	6.9.12.98
 Release:	2
 License:	BSD-like
 Group:		Graphics
-Url:		http://legacy.imagemagick.org/
+Url:		https://legacy.imagemagick.org/
 Source0:	https://imagemagick.org/archive/releases/ImageMagick-%{dversion}.tar.xz
 # Also:	https://github.com/ImageMagick/ImageMagick6/archive/%{dversion}/ImageMagick-%{dversion}.tar.gz
 Source1:	ImageMagick.pdf.bz2
