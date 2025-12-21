@@ -50,6 +50,11 @@ Patch17:	imagemagick-fpx.diff
 Patch19:	ImageMagick-libpath.diff
 #Patch20:	imagemagick-6.8.3-pkgconfig.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	chrpath
 BuildRequires:	ghostscript
 BuildRequires:	subversion
