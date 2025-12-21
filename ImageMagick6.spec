@@ -29,8 +29,8 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.13.29
-Release:	3
+Version:	6.9.13.36
+Release:	1
 License:	BSD-like
 Group:		Graphics
 Url:		https://legacy.imagemagick.org/
