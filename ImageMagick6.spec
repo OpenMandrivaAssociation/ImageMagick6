@@ -29,7 +29,7 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.13.36
+Version:	6.9.13.41
 Release:	1
 License:	BSD-like
 Group:		Graphics
@@ -202,8 +202,8 @@ export CXXFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
 	--with-lqr
 
 # Disable rpath
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+#sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+#sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 # Fix syntax errors
 find PerlMagick -name "*.PL" |xargs sed -i -e "s,'\$,';,g"
 
