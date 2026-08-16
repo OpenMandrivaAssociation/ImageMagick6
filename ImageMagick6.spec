@@ -54,6 +54,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	libtool-base
 BuildRequires:	slibtool
+BuildRequires:	pkgconfig(sltdl)
 BuildRequires:	make
 BuildRequires:	chrpath
 BuildRequires:	ghostscript
