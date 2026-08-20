@@ -1,0 +1,47 @@
+--- ImageMagick-6.9.13-54/magick/opencl.c
++++ ImageMagick-6.9.13-54/magick/opencl.c
+@@ -93,10 +93,6 @@
+ 
+ #if defined(MAGICKCORE_OPENCL_SUPPORT)
+ 
+-#if defined(MAGICKCORE_LTDL_DELEGATE)
+-#include "ltdl.h"
+-#endif
+-
+ #define NUM_CL_RAND_GENERATORS 1024  /* number of random number generators running in parallel */
+ #define PROFILE_OCL_KERNELS 0
+ 
+@@ -287,7 +283,7 @@
+ #ifdef MAGICKCORE_WINDOWS_SUPPORT
+     return (void *)LoadLibraryA(libraryName);
+ #else
+-    return (void *)dlopen(libraryName, RTLD_NOW);
++    return (void *)dlopen(libraryName, RTLD_NOW|RTLD_GLOBAL);
+ #endif
+ }
+ 
+@@ -479,7 +475,10 @@
+ #ifdef MAGICKCORE_WINDOWS_SUPPORT
+       library = OsLibraryLoad("OpenCL.dll");
+ #else
+-      library = OsLibraryLoad("libOpenCL.so");
++      /* Runtime package ships libOpenCL.so.1; the unversioned .so is -devel. */
++      library = OsLibraryLoad("libOpenCL.so.1");
++      if (library == (void *) NULL)
++        library = OsLibraryLoad("libOpenCL.so");
+ #endif
+       if (library)
+         status = bindOpenCLFunctions(library);
+@@ -3047,7 +3046,11 @@
+   if (OpenCLLib != (MagickLibrary *)NULL)
+     {
+       if (OpenCLLib->base != (void *) NULL)
+-        (void) lt_dlclose(OpenCLLib->base);
++#ifdef MAGICKCORE_WINDOWS_SUPPORT
++        (void) FreeLibrary((HMODULE) OpenCLLib->base);
++#else
++        (void) dlclose(OpenCLLib->base);
++#endif
+       OpenCLLib=(MagickLibrary *)RelinquishMagickMemory(OpenCLLib);
+     }
+   if (OpenCLLibLock != (SemaphoreInfo*)NULL)

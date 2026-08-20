@@ -49,6 +49,9 @@ Patch7:		imagemagick-urw.diff
 Patch17:	imagemagick-fpx.diff
 Patch19:	ImageMagick-libpath.diff
 #Patch20:	imagemagick-6.8.3-pkgconfig.patch
+# OpenCL already uses libc dlopen; close with dlclose (not lt_dlclose) and
+# prefer the runtime soname (libOpenCL.so is only in -devel).
+Patch21:	imagemagick6-opencl-dlopen.patch
 
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -83,6 +86,7 @@ BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xext)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libwebp)
+BuildRequires:	pkgconfig(OpenCL)
 %if ! %{with bootstrap}
 BuildRequires:	pkgconfig(ddjvuapi)
 %endif
@@ -201,7 +205,8 @@ export CXXFLAGS="${CXXFLAGS:-%{optflags}} -fno-strict-aliasing -fPIC"
 	--with-jp2 \
 	--with-jxl \
 	--with-gvc \
-	--with-lqr
+	--with-lqr \
+	--enable-opencl
 
 # Disable rpath
 #sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
@@ -219,7 +224,9 @@ find PerlMagick -name "*.PL" |xargs sed -i -e "s,'\$,';,g"
 %pgo
 set +e
 export LLVM_PROFILE_FILE="%{_pgo_profile_dir}/imagemagick6-%%m-%%p.profraw"
-# IM6 OpenCL (if present) must not pick a GPU on the builder.
+# Do not let a GPU on the build host own the profile. CPU OpenCL (pocl
+# etc.) still trains the host enqueue path; if no CPU ICD exists, IM
+# falls back to the OpenMP implementations and those stay hot.
 export MAGICK_OCL_DEVICE=CPU
 
 TOP="$PWD"
