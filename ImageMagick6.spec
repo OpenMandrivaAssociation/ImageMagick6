@@ -30,7 +30,7 @@
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
 Version:	6.9.13.54
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		Graphics
 Url:		https://legacy.imagemagick.org/
@@ -175,8 +175,9 @@ libtoolize --copy --force; aclocal -I m4; autoconf; automake -a
 %build
 #gw the format-string patch is incomplete:
 %define Werror_cflags %nil
-export CFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
-export CXXFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
+# Keep ${CFLAGS}/${CXXFLAGS} so a %%pgo pass can inject -fprofile-generate/use
+export CFLAGS="${CFLAGS:-%{optflags}} -fno-strict-aliasing -fPIC"
+export CXXFLAGS="${CXXFLAGS:-%{optflags}} -fno-strict-aliasing -fPIC"
 
 %configure \
 	--disable-static \
@@ -196,7 +197,7 @@ export CXXFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
 	--without-windows-font-dir \
 	--with-modules \
 	--with-perl \
-	--with-perl-options="INSTALLDIRS=vendor CCFLAGS='%{optflags}' CC='%{__cc} -L$PWD/magick/.libs' LDDLFLAGS='%{ldflags} -shared -L$PWD/magick/.libs'" \
+	--with-perl-options="INSTALLDIRS=vendor CCFLAGS='${CFLAGS}' CC='%{__cc} -L$PWD/magick/.libs' LDDLFLAGS='${LDFLAGS:-%{?build_ldflags}} -shared -L$PWD/magick/.libs'" \
 	--with-jp2 \
 	--with-jxl \
 	--with-gvc \
@@ -209,6 +210,169 @@ export CXXFLAGS="%{optflags} -fno-strict-aliasing -fPIC"
 find PerlMagick -name "*.PL" |xargs sed -i -e "s,'\$,';,g"
 
 %make_build
+
+# Train the instrumented convert/identify and MagickWand/Magick++ on the
+# paths that dominate real use. Optional delegates are skipped if missing.
+# No X11.
+# slibtool writes coder .so files to .libs/ but the .la dlname is just
+# "foo.so", so lt_dlopen looks next to the .la (not in .libs/).
+%pgo
+set +e
+export LLVM_PROFILE_FILE="%{_pgo_profile_dir}/imagemagick6-%%m-%%p.profraw"
+# IM6 OpenCL (if present) must not pick a GPU on the builder.
+export MAGICK_OCL_DEVICE=CPU
+
+TOP="$PWD"
+tool() {
+	t="$TOP/utilities/.libs/$1"
+	[ -x "$t" ] || t="$TOP/utilities/$1"
+	echo "$t"
+}
+CONVERT=$(tool convert)
+IDENTIFY=$(tool identify)
+COMPARE=$(tool compare)
+MONTAGE=$(tool montage)
+MOGRIFY=$(tool mogrify)
+STREAM=$(tool stream)
+COMPOSITE=$(tool composite)
+if [ ! -x "$CONVERT" ]; then
+	echo "PGO: instrumented convert missing"
+	exit 1
+fi
+for d in "$TOP/coders" "$TOP/filters"; do
+	if [ -d "$d/.libs" ]; then
+		( cd "$d" && for so in .libs/*.so; do
+			[ -e "$so" ] || continue
+			ln -sfn "$so" "$(basename "$so")"
+		done )
+	fi
+done
+export LD_LIBRARY_PATH="$TOP/magick/.libs:$TOP/wand/.libs:$TOP/Magick++/lib/.libs${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export MAGICK_CODER_MODULE_PATH="$TOP/coders"
+export MAGICK_FILTER_MODULE_PATH="$TOP/filters"
+export MAGICK_CONFIGURE_PATH="$TOP/config"
+
+im() {
+	"$CONVERT" "$@"
+}
+try() {
+	im "$@"
+	rc=$?
+	if [ $rc -ne 0 ]; then
+		echo "PGO: skipped (exit $rc): convert $*"
+	fi
+	return 0
+}
+
+WORKDIR="$PWD/pgo-train"
+rm -rf "$WORKDIR"
+mkdir -p "$WORKDIR"
+cd "$WORKDIR"
+
+im logo: logo.png || exit 1
+im wizard: wizard.png || exit 1
+im rose: rose.png || exit 1
+try granite: granite.png
+try netscape: netscape.gif
+try -size 1280x720 plasma:fractal photo.png
+if [ ! -f photo.png ]; then
+	im logo: -resize 1280x720 photo.png || exit 1
+fi
+try -size 640x360 gradient:black-white gradient.png
+try -size 320x240 xc:'#224466' solid.png
+try -size 400x80 -background white -fill black -pointsize 28 caption:'ImageMagick PGO' caption.png
+
+for fmt in jpg png webp gif tiff bmp ppm pam miff; do
+	try photo.png -quality 85 "enc.$fmt"
+	try "enc.$fmt" "round.png"
+done
+try rose.png enc.ico
+try enc.ico ico-round.png
+try photo.png -quality 82 -sampling-factor 4:2:0 jpeg420.jpg
+try photo.png -interlace Plane -quality 80 jpegprog.jpg
+try photo.png -colorspace Gray -quality 80 jpeggray.jpg
+try wizard: -resize 400x PNG32:alpha.png
+try alpha.png -background none -resize 200x alpha-small.png
+try -delay 8 -loop 0 logo: -resize 120x \
+	\( +clone -roll +8+0 \) \( +clone -roll +0+8 \) anim.gif
+try anim.gif -coalesce -resize 80x -layers optimize anim-opt.gif
+
+try photo.png out.jxl
+try photo.png out.jp2
+try rose.png out.svg
+try photo.png pdf:out.pdf
+try 'out.pdf[0]' pdfpage.png
+if [ -f ../tests/rose.pnm ]; then
+	try ../tests/rose.pnm rose-pnm.png
+fi
+
+try photo.png -auto-orient -resize '1024x1024>' -strip -quality 82 web.jpg
+try photo.png -thumbnail 150x150^ -gravity center -extent 150x150 thumb.jpg
+try photo.png -crop 640x360+80+40 +repage crop.png
+try photo.png -rotate 90 rot.png
+try photo.png -flip -flop flip.png
+try photo.png -resize 50% -unsharp 0x0.75+0.75+0.008 unsharp.jpg
+try photo.png -gaussian-blur 0x1.2 blur.png
+try photo.png -sharpen 0x1.0 sharp.png
+try photo.png -modulate 105,110,100 mod.png
+try photo.png -level 5%,95% level.png
+try photo.png -normalize norm.png
+try photo.png -colorspace sRGB srgb.png
+try photo.png -colorspace Gray gray.png
+try photo.png -colorspace CMYK cmyk.jpg
+try photo.png -gamma 1.1 gamma.png
+try photo.png -posterize 16 post.png
+try photo.png -colors 64 +dither pal.png
+try photo.png -trim +repage trim.png
+try photo.png -bordercolor white -border 8 border.png
+try photo.png -resize 800x -quality 70 -strip -interlace Plane web-sm.jpg
+try rose.png -liquid-rescale 50%x50% lqr.png
+
+try photo.png -gravity southeast -pointsize 22 -fill white \
+	-annotate +16+16 'PGO watermark' annotated.jpg
+try photo.png caption.png -gravity south -geometry +0+10 -compose over -composite marked.png
+try -size 200x200 xc:none -fill '#cc3333' -draw 'circle 100,100 100,20' ball.png
+try photo.png ball.png -gravity northeast -geometry +20+20 -compose over -composite badged.png
+
+if [ -x "$IDENTIFY" ]; then
+	"$IDENTIFY" -verbose photo.png
+	"$IDENTIFY" jpeg420.jpg enc.png anim.gif
+fi
+if [ -x "$COMPARE" ]; then
+	"$COMPARE" -metric RMSE photo.png web.jpg diff.png
+fi
+if [ -x "$MONTAGE" ]; then
+	"$MONTAGE" logo.png wizard.png rose.png -geometry 120x120+4+4 -tile 3x1 sheet.png
+fi
+if [ -x "$MOGRIFY" ]; then
+	"$MOGRIFY" -resize 320x -quality 80 jpeg420.jpg
+fi
+if [ -x "$STREAM" ]; then
+	"$STREAM" -map rgb -storage-type char rose.png stream.rgb
+fi
+
+cd "$TOP"
+make %{?_smp_mflags} tests/wandtest tests/validate \
+	Magick++/tests/appendImages Magick++/tests/readWriteImages \
+	Magick++/tests/attributes Magick++/tests/color \
+	Magick++/tests/montageImages Magick++/tests/morphImages \
+	Magick++/tests/averageImages Magick++/tests/coalesceImages
+[ -x tests/wandtest ] && tests/wandtest
+if [ -x tests/validate ]; then
+	for kind in convert identify compare composite montage stream colorspace; do
+		tests/validate -validate "$kind"
+	done
+fi
+export SRCDIR="$TOP/Magick++/tests/"
+for t in appendImages readWriteImages attributes color montageImages \
+	morphImages averageImages coalesceImages; do
+	if [ -x Magick++/tests/$t ]; then
+		Magick++/tests/$t
+	fi
+done
+
+rm -rf "$WORKDIR"
+exit 0
 
 %if %{build_test}
 %check
