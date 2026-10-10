@@ -29,13 +29,13 @@
 
 Summary:	An X application for displaying and manipulating images
 Name:		imagemagick6
-Version:	6.9.13.57
+Version:	6.9.13.58
 Release:	1
 License:	BSD-like
 Group:		Graphics
 Url:		https://legacy.imagemagick.org/
-Source0:	https://imagemagick.org/archive/releases/ImageMagick-%{dversion}.tar.xz
-# Also:	https://github.com/ImageMagick/ImageMagick6/archive/%{dversion}/ImageMagick-%{dversion}.tar.gz
+# imagemagick.org/archive/releases no longer serves these tarballs.
+Source0:	https://github.com/ImageMagick/ImageMagick6/releases/download/%{dversion}/ImageMagick-%{dversion}.tar.xz
 Source1:	ImageMagick.pdf.bz2
 Source2:	%{name}.rpmlintrc
 # re-scaled from ftp://ftp.imagemagick.org/pub/ImageMagick/images/magick-icon.png
